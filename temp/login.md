@@ -1,6 +1,6 @@
 $def with(name)
 
-Login to ALFABIS!
+Login to ITK Snap Server!
 -----
 
 <form action="/login" method="POST">

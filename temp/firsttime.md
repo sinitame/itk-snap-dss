@@ -1,6 +1,6 @@
 $def with(redirect)
 
-Alfabis Server -- Terms and Conditions
+ITK-SNAP Server -- Terms and Conditions
 ----
 
 You must accept these terms and conditions before using this system. 

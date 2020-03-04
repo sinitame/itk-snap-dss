@@ -9,15 +9,14 @@ RUN apt-get install -y git-core curl
 WORKDIR /app
 
 # Checkout the server 
-# RUN git clone -b sandbox https://github.com/pyushkevich/alfabis_server.git alfabis_server
-COPY . /app/alfabis_server/
+COPY . /app/itk_snap_server/
 
 # Download the wait-for-it script
 ADD https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh /app/wait-for-it.sh
 RUN chmod +x /app/wait-for-it.sh
 
 # Install the python dependencies
-RUN pip install --trusted-host pypi.python.org -r /app/alfabis_server/requirements.txt
+RUN pip install --trusted-host pypi.python.org -r /app/itk_snap_server/requirements.txt
 
 # Make port 8080 available to the world outside this container
 EXPOSE 8080

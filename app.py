@@ -95,14 +95,14 @@ db = web.database(
   host=os.environ['POSTGRES_PORT_5432_TCP_ADDR'],
   port=os.environ['POSTGRES_PORT_5432_TCP_PORT'],
   dbn='postgres', 
-  db=os.environ['ALFABIS_DATABASE_NAME'],
-  user=os.environ['ALFABIS_DATABASE_USERNAME'],
-  pw=os.environ['ALFABIS_DATABASE_PASSWORD'])
+  db=os.environ['ITK_SNAP_SERVER_DATABASE_NAME'],
+  user=os.environ['ITK_SNAP_SERVER_DATABASE_USERNAME'],
+  pw=os.environ['ITK_SNAP_SERVER_DATABASE_PASSWORD'])
 
 # Configure the session. By default, the session is initialized with nothing
 # but in no-auth mode, the session should be initialized as logged in with
 # user set 
-if "ALFABIS_NOAUTH" not in os.environ:
+if "ITK_SNAP_SERVER_NOAUTH" not in os.environ:
 
   # Blank session
   sess = web.session.Session(
@@ -1160,24 +1160,24 @@ class OAuthCallbackAPI:
 
     # Get the email
     email = user_info.get("email")
-    alfabis_id=None
+    user_id=None
 
     # Create an account for the user with credential information
     res = db.select('users', where="email=$email", vars=locals())
     if len(res) > 0:
       stored_user_data = res[0]
-      alfabis_id = stored_user_data.id
+      user_id = stored_user_data.id
       is_admin = stored_user_data.sysadmin
     else:
       passwd=os.urandom(24).encode('hex')
       print user_info
-      alfabis_id = db.insert('users', email=email, passwd=passwd, dispname=user_info.get("name"))
+      user_id = db.insert('users', email=email, passwd=passwd, dispname=user_info.get("name"))
       is_admin = False
 
     # Set the user information in the session
     sess.email = user_info.get('email')
     sess.name = user_info.get('name')
-    sess.user_id = alfabis_id
+    sess.user_id = user_id
     sess.is_admin = is_admin
     sess.loggedin = True
 
