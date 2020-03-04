@@ -1,0 +1,97 @@
+$def with(text, ctx)
+
+
+$def mitem(path, text):
+  $if ctx['path'] == path:
+    <li class="pure-menu-item pure-menu-selected">
+  $else:
+    <li class="pure-menu-item">
+
+  <a href="$path" class="pure-menu-link">$text</a></li>
+
+
+
+<!DOCTYPE html>
+<html>
+<head profile="http://www.w3.org/2005/10/profile">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ITK-SNAP Distributed Segmentation Services</title>
+
+    <link rel="stylesheet" href="static/pure/pure-min.css">    
+    <link rel="stylesheet" href="static/pure/grids-responsive-min.css">
+	<!--[if lte IE 8]>
+		<link rel="stylesheet" href="static/pure/layouts/side-menu-old-ie.css">
+	<![endif]-->
+	<!--[if gt IE 8]><!-->
+		<link rel="stylesheet" href="static/pure/layouts/side-menu.css">
+    <link rel="stylesheet" href="static/alfabis.css">
+    <link rel="stylesheet" href="static/balloon.css">
+	<!--<![endif]-->
+
+  <!-- link rel="stylesheet" href="static/retro.css" -->
+  <link rel="icon" type="image/png" href="static/img/itksnap_favicon_32.png">
+</head>
+<body>
+
+<div id="layout">
+    <!-- Menu toggle -->
+    <a href="#menu" id="menuLink" class="menu-link">
+        <!-- Hamburger icon -->
+        <span></span>
+    </a>
+
+    <div id="menu">
+        <div class="pure-menu">
+          <a class="pure-menu-heading" href="/">ITK-SNAP DSS</a>
+
+            <ul class="pure-menu-list">
+              $:mitem("/", "Home")
+
+              $if session.loggedin:
+                $:mitem("/services", "Services")
+
+              $:mitem("/about", "About")
+
+              $if session.loggedin and session.is_admin:
+                $:mitem("/admin", "Admin")
+
+              $if session.loggedin:
+                $:mitem("/logout", "Sign Out")
+            </ul>
+        </div>
+    </div>
+
+    $if ctx['admin']:
+      <div class="header">
+        <div class="home-menu pure-menu pure-menu-horizontal">
+            <ul class="pure-menu-list">
+              $:mitem("/admintickets", "Tickets")
+              $:mitem("/adminservices", "Services")
+              $:mitem("/admin", "Admin Tasks")
+            </ul>
+        </div>
+      </div>
+
+    <div id="main">
+
+	  <!--
+        <div class="header">
+            <h1>Page Title</h1>
+            <h2>A subtitle for your page goes here</h2>
+		</div> -->
+      <div class="content-wrapper">
+        <div class="content">
+$:text
+        </div>
+      </div>
+    </div>
+</div>
+
+<script src="static/pure/js/ui.js"></script>
+
+
+</body>
+</html>
+
