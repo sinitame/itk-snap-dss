@@ -3,7 +3,7 @@ FROM python:2.7-slim
 
 # Make sure we have git
 RUN apt-get update
-RUN apt-get install -y git-core curl
+RUN apt-get install -y git-core curl gcc
 RUN apt-get install -y libpq-dev python-dev
 # Create workdir
 WORKDIR /app
