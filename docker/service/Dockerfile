@@ -2,8 +2,8 @@
 FROM pyushkevich/itksnap:v3.8.0-beta
 
 # Standard stuff
-RUN apt-get update
-RUN apt-get install -y git-core curl
+RUN sudo apt-get update
+RUN sudo apt-get install -y git-core curl
 
 # Working directory
 WORKDIR /service
