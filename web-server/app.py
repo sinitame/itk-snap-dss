@@ -130,8 +130,9 @@ else:
 
 
 # Configure the template renderer with session support
+dirname, filename = os.path.split(os.path.abspath(__file__))
 render = web.template.render(
-  './temp/', 
+  dirname + '/temp/', 
   globals={'markdown': markdown.markdown, 'session': sess}, 
   cache=False);
 
