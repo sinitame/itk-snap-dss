@@ -131,7 +131,7 @@ else:
 
 # Configure the template renderer with session support
 render = web.template.render(
-  'temp/', 
+  './temp/', 
   globals={'markdown': markdown.markdown, 'session': sess}, 
   cache=False);
 
