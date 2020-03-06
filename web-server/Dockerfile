@@ -22,4 +22,4 @@ RUN pip install --trusted-host pypi.python.org -r /app/web_server/requirements.t
 EXPOSE 8080
 
 # Run server on port 80887650
-CMD ["python", "/app/web_server/app.py --server"] 
+CMD python /app/web_server/app.py --server
