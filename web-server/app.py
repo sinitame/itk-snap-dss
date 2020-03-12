@@ -16,6 +16,7 @@ import datetime
 import argparse
 import tempfile
 import traceback
+import logging
 from pprint import pprint
 from os import walk
 from os.path import basename
@@ -23,6 +24,10 @@ from oauth2client import client
 from apiclient.discovery import build
 from git import Repo
 from git import Git
+
+# Needed to log debug prints
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
 
 # Needed for session support
 web.config.debug = False
@@ -713,21 +718,21 @@ class TicketLogic:
 
     # Get the directory to store this in
     filedir = self.get_filedir(area)
-    print("file dir:", filedir)
+    logger.error("file dir:" + filedir)
     filepath=fileobj.filename.replace('\\','/') # replaces the windows-style slashes with linux ones.
-    print("file path:", filepath)
+    logger.error("file path:" + filepath)
     filename=filepath.split('/')[-1] # splits the and chooses the last part (the filename with extension)
-    print("file name:", filename)
+    logger.error("file name:" + filename)
 
 
     fout = open(filedir +'/'+ filename,'w') # creates the file where the uploaded file should be stored
-    print("ok 1")
+    logger.error("ok 1")
 
     fout.write(fileobj.file.read()) # writes the uploaded file to the newly created file.
-    print("ok 2")
+    logger.error("ok 2")
 
     fout.close() # closes the file, upload complete.
-    print("ok 3")
+    logger.error("ok 3")
     # Return the local path to file
     return filename
 
@@ -1418,7 +1423,7 @@ class TicketFilesAPI (TicketsAPIBase):
     # Data directory
     x = web.input(myfile={})
 
-    print("Access ok")
+    logger.error("Access ok")
     try:
       TicketLogic(ticket_id).receive_file(area, x.myfile)
       return "success"
