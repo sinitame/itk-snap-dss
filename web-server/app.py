@@ -25,10 +25,6 @@ from apiclient.discovery import build
 from git import Repo
 from git import Git
 
-# Needed to log debug prints
-logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
-
 # Needed for session support
 web.config.debug = False
 
@@ -718,21 +714,21 @@ class TicketLogic:
 
     # Get the directory to store this in
     filedir = self.get_filedir(area)
-    logger.error("file dir:" + filedir)
+    print("file dir:" + filedir, file=web.debug)
     filepath=fileobj.filename.replace('\\','/') # replaces the windows-style slashes with linux ones.
-    logger.error("file path:" + filepath)
+    print("file path:" + filepath, file=web.debug)
     filename=filepath.split('/')[-1] # splits the and chooses the last part (the filename with extension)
-    logger.error("file name:" + filename)
+    print("file name:" + filename, file=web.debug)
 
 
     fout = open(filedir +'/'+ filename,'w') # creates the file where the uploaded file should be stored
-    logger.error("ok 1")
+    print("ok 1", file=web.debug)
 
     fout.write(fileobj.file.read()) # writes the uploaded file to the newly created file.
-    logger.error("ok 2")
+    print("ok 2", file=web.debug)
 
     fout.close() # closes the file, upload complete.
-    logger.error("ok 3")
+    print("ok 3", file=web.debug)
     # Return the local path to file
     return filename
 
@@ -1423,7 +1419,7 @@ class TicketFilesAPI (TicketsAPIBase):
     # Data directory
     x = web.input(myfile={})
 
-    logger.error("Access ok")
+    print("Access ok", file=web.debug)
     try:
       TicketLogic(ticket_id).receive_file(area, x.myfile)
       return "success"
