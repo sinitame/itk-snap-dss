@@ -714,21 +714,20 @@ class TicketLogic:
 
     # Get the directory to store this in
     filedir = self.get_filedir(area)
-    print("file dir:" + filedir, file=web.debug)
+    print("file dir:" + filedir)
     filepath=fileobj.filename.replace('\\','/') # replaces the windows-style slashes with linux ones.
-    print("file path:" + filepath, file=web.debug)
+    print("file path:" + filepath)
     filename=filepath.split('/')[-1] # splits the and chooses the last part (the filename with extension)
-    print("file name:" + filename, file=web.debug)
-
+    print("file name:" + filename)
 
     fout = open(filedir +'/'+ filename,'w') # creates the file where the uploaded file should be stored
-    print("ok 1", file=web.debug)
+    print("ok 1")
 
     fout.write(fileobj.file.read()) # writes the uploaded file to the newly created file.
-    print("ok 2", file=web.debug)
+    print("ok 2")
 
     fout.close() # closes the file, upload complete.
-    print("ok 3", file=web.debug)
+    print("ok 3")
     # Return the local path to file
     return filename
 
@@ -1419,7 +1418,7 @@ class TicketFilesAPI (TicketsAPIBase):
     # Data directory
     x = web.input(myfile={})
 
-    print("Access ok", file=web.debug)
+    print "Access ok"
     try:
       TicketLogic(ticket_id).receive_file(area, x.myfile)
       return "success"
