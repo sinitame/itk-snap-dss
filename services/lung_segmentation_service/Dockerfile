@@ -3,7 +3,12 @@ FROM ibmcom/powerai:1.6.2-pytorch-ubuntu18.04-py37
 
 # Standard stuff
 RUN sudo apt-get update
-RUN sudo apt-get install -y git-core curl
+RUN sudo apt-get install -y git-core curl\
+                            build-essential \
+                            cmake \
+                            htop \
+                            zip \
+                            unzip
 
 # Working directory
 WORKDIR /service
