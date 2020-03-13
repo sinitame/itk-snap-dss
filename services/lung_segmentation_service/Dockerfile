@@ -11,9 +11,8 @@ WORKDIR /service
 # Install the neck cutting script and service script
 COPY . /service/
 
-RUN bash
-RUN pip install /service/SimpleITK-1.2.0+gd6026-cp37-cp37m-linux_ppc64le.whl
-RUN pip install pynrrd
+RUN /opt/anaconda/pip install /service/SimpleITK-1.2.0+gd6026-cp37-cp37m-linux_ppc64le.whl
+RUN /opt/anaconda/pip install pynrrd
 
 CMD python -u /service/deamon.py
 
