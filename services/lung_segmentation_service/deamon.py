@@ -222,13 +222,13 @@ while True:
             if verbose == True:
                 print(scan_id, ":\n -> shape:", ct_scan.shape, "\n -> spacing:", orig_spacing)
             log_progress(ticket_id, 0.1)
-            log_info(ticket_id, "[Image {0}] Step 1: {1} -> shape: {2} -> spacing: {3}".format(i, scan_id, ct_scan.shape, orig_spacing)
+            log_info(ticket_id, "[Image {0}] Step 1: {1} -> shape: {2} -> spacing: {3}".format(i, scan_id, ct_scan.shape, orig_spacing))
 
             ct_scan, spacing = utils.prep_img_arr(ct_scan, orig_spacing)
             if verbose == True:
                 print("CT-scan:\n -> shape:", ct_scan.shape, "\n -> spacing:", spacing)
             log_progress(ticket_id, 0.2)
-            log_info(ticket_id, "[Image {0}] Step 2: {1} -> shape: {2} -> spacing: {3}".format(i ,scan_id, ct_scan.shape, orig_spacing)
+            log_info(ticket_id, "[Image {0}] Step 2: {1} -> shape: {2} -> spacing: {3}".format(i ,scan_id, ct_scan.shape, orig_spacing))
 
             # Compute lungs mask
             log_info(ticket_id, "[Image {0}] Starting inference".format(i))
