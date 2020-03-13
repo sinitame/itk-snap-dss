@@ -33,6 +33,11 @@ def log_progress(ticket_id, progress):
     log_response = requests.post(log_progress_api, data={"chunk_start":"0.0","chunk_end":"1.0","progress":str(progress)})
     print('Notified log progress {0} for ticket {1}: '.format(progress, ticket_id),log_response.text)
 
+def log_info(ticket_id, info):
+    log_url = "{0}/api/pro/tickets/{1}/info".format(main_url, ticket_id)
+    r = requests.post(log_url, data={"message": info})
+    print('Notified info ({0}) for ticker {1}: '.format(info, ticket_id), r.text)
+
 def create_IOHistory_node(file_minidom, segmentation_file_path):
 
     # Create new node structure
@@ -170,6 +175,8 @@ while True:
         files_to_download = requests.get(list_file_api_url)
         print(files_to_download.text)
 
+        log_info(ticket_id, "Starting file download")
+
         for row in files_to_download.text.split('\n')[:-1]:
             file_id = row.split(',')[0]
             file_name = row.split(',')[1][:-1]
@@ -203,7 +210,9 @@ while True:
         print("Workspace file:", workspace_file)
         print("Files to process", files_to_process)
 
-        for file in files_to_process:
+        log_info(ticket_id, "Starting image process")
+
+        for i, file in enumerate(files_to_process):
 
             # Load scan
             scan_path, scan_id = os.path.split(file)
@@ -213,15 +222,19 @@ while True:
             if verbose == True:
                 print(scan_id, ":\n -> shape:", ct_scan.shape, "\n -> spacing:", orig_spacing)
             log_progress(ticket_id, 0.1)
+            log_info(ticket_id, "[Image {0}] Step 1: {1} -> shape: {2} -> spacing: {3}".format(i, scan_id, ct_scan.shape, orig_spacing)
 
             ct_scan, spacing = utils.prep_img_arr(ct_scan, orig_spacing)
             if verbose == True:
                 print("CT-scan:\n -> shape:", ct_scan.shape, "\n -> spacing:", spacing)
             log_progress(ticket_id, 0.2)
+            log_info(ticket_id, "[Image {0}] Step 2: {1} -> shape: {2} -> spacing: {3}".format(i ,scan_id, ct_scan.shape, orig_spacing)
 
             # Compute lungs mask
+            log_info(ticket_id, "[Image {0}] Starting inference".format(i))
             mask = predict.predict(ct_scan, nb_classes, start_filters, model_path=model_path, threshold=threshold, erosion=erosion, verbose=verbose)
             log_progress(ticket_id, 0.6)
+            log_info(ticket_id, "[Image {0}] End inference".format(i))
 
             # Resample mask
             mask = utils.resample(mask[0][0], spacing, orig_spacing)
@@ -245,6 +258,7 @@ while True:
         #                       Modify ITK snap workspace to integrate segmentation 
         #######################################################################################################
 
+        log_info(ticket_id, "Starting workspace update")
         for file in processed_files:
             file_name = file.split('/')[-1]
             print(file_name)
@@ -254,6 +268,7 @@ while True:
         #                                   Send result to server 
         #######################################################################################################
 
+        log_info(ticket_id, "Sending result to web server")
         files_to_upload = processed_files + [workspace_file]
         print(files_to_upload)
 
@@ -267,6 +282,7 @@ while True:
         #                           Notify client that the ticket is ready
         #######################################################################################################
 
+        log_info(ticket_id, "End processing")
         success_url = "{0}/api/pro/tickets/{1}/status".format(main_url, ticket_id)
         r = requests.post(success_url, data={"status": "success"})
         print("Notify client:", r.text)
