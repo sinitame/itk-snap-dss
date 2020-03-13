@@ -22,8 +22,14 @@ except:
 def predict(ct_scan, nb_classes, start_filters, model_path, threshold=False, 
             erosion=False, verbose=False):
 
-    # Use CUDA
-    device = torch.device("cpu")
+    if torch.cuda.is_available():
+        # Use CUDA
+        device = torch.device("cuda:0")
+    else:
+        device = torch.device("cpu")
+
+    print("Used device: ", device)
+
     # LMS
     try:
         torch.cuda.set_enabled_lms(True)
