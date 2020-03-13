@@ -162,7 +162,7 @@ while True:
     else:
         ticket_id = claim_response_content.split(",")[0]
 
-        ticket_directory = "/service/datastore/ticket{0}".format(ticket_id)
+        ticket_directory = "/home/pwrai/datastore/ticket{0}".format(ticket_id)
         os.makedirs(ticket_directory, exist_ok=True)
 
         list_file_api_url = "{0}/api/pro/tickets/{1}/files/input".format(main_url,ticket_id)
