@@ -181,92 +181,92 @@ while True:
             print("Downloaded ", file_path)
             downloaded_files.append(file_path)
 
-    #####################################################################################################
-    #                                           Process data
-    #####################################################################################################
+        #####################################################################################################
+        #                                           Process data
+        #####################################################################################################
 
-    nb_classes=1
-    start_filters=32
-    model_path="/service/lung_segmentation_model"
-    threshold=True
-    erosion=True
-    verbose=True
-    workspace_file = ""
+        nb_classes=1
+        start_filters=32
+        model_path="/service/lung_segmentation_model"
+        threshold=True
+        erosion=True
+        verbose=True
+        workspace_file = ""
 
-    print(downloaded_files)
-    for file in downloaded_files:
-        if file.endswith(".itksnap"):
-            workspace_file = file
-        else:
-            files_to_process.append(file)
+        print(downloaded_files)
+        for file in downloaded_files:
+            if file.endswith(".itksnap"):
+                workspace_file = file
+            else:
+                files_to_process.append(file)
 
-    print("Workspace file:", workspace_file)
-    print("Files to process", files_to_process)
+        print("Workspace file:", workspace_file)
+        print("Files to process", files_to_process)
 
-    for file in files_to_process:
+        for file in files_to_process:
 
-        # Load scan
-        scan_path, scan_id = os.path.split(file)
-        scan_id = scan_id.split('.')[0]
+            # Load scan
+            scan_path, scan_id = os.path.split(file)
+            scan_id = scan_id.split('.')[0]
 
-        ct_scan, origin, orig_spacing = utils.load_itk(file)
-        if verbose == True:
-            print(scan_id, ":\n -> shape:", ct_scan.shape, "\n -> spacing:", orig_spacing)
-        log_progress(ticket_id, 0.1)
+            ct_scan, origin, orig_spacing = utils.load_itk(file)
+            if verbose == True:
+                print(scan_id, ":\n -> shape:", ct_scan.shape, "\n -> spacing:", orig_spacing)
+            log_progress(ticket_id, 0.1)
 
-        ct_scan, spacing = utils.prep_img_arr(ct_scan, orig_spacing)
-        if verbose == True:
-            print("CT-scan:\n -> shape:", ct_scan.shape, "\n -> spacing:", spacing)
-        log_progress(ticket_id, 0.2)
+            ct_scan, spacing = utils.prep_img_arr(ct_scan, orig_spacing)
+            if verbose == True:
+                print("CT-scan:\n -> shape:", ct_scan.shape, "\n -> spacing:", spacing)
+            log_progress(ticket_id, 0.2)
 
-        # Compute lungs mask
-        mask = predict.predict(ct_scan, nb_classes, start_filters, model_path=model_path, threshold=threshold, erosion=erosion, verbose=verbose)
-        log_progress(ticket_id, 0.6)
+            # Compute lungs mask
+            mask = predict.predict(ct_scan, nb_classes, start_filters, model_path=model_path, threshold=threshold, erosion=erosion, verbose=verbose)
+            log_progress(ticket_id, 0.6)
 
-        # Resample mask
-        mask = utils.resample(mask[0][0], spacing, orig_spacing)
-        if threshold == True:
-            mask[mask<=0] = 0
-            mask[mask>0] = 1
-            mask = mask.astype('uint8')
-        if verbose == True:
-            print("Mask:\n -> shape:", mask.shape, "\n -> spacing:", orig_spacing)
-        log_progress(ticket_id, 0.8)
+            # Resample mask
+            mask = utils.resample(mask[0][0], spacing, orig_spacing)
+            if threshold == True:
+                mask[mask<=0] = 0
+                mask[mask>0] = 1
+                mask = mask.astype('uint8')
+            if verbose == True:
+                print("Mask:\n -> shape:", mask.shape, "\n -> spacing:", orig_spacing)
+            log_progress(ticket_id, 0.8)
 
 
-        # Write into ouput files (nrrd format)
-        result_file_path = os.path.join(scan_path, scan_id + '_mask.nrrd')
-        utils.write_itk(result_file_path, mask, origin, orig_spacing)
-        log_progress(ticket_id, 1.0)
+            # Write into ouput files (nrrd format)
+            result_file_path = os.path.join(scan_path, scan_id + '_mask.nrrd')
+            utils.write_itk(result_file_path, mask, origin, orig_spacing)
+            log_progress(ticket_id, 1.0)
 
-        processed_files.append(result_file_path)
+            processed_files.append(result_file_path)
 
-    #######################################################################################################
-    #                       Modify ITK snap workspace to integrate segmentation 
-    #######################################################################################################
+        #######################################################################################################
+        #                       Modify ITK snap workspace to integrate segmentation 
+        #######################################################################################################
 
-    for file in processed_files:
-        file_name = file.split('/')[-1]
-        print(file_name)
-        add_segmentation_to_workspace(workspace_file, file_name)
+        for file in processed_files:
+            file_name = file.split('/')[-1]
+            print(file_name)
+            add_segmentation_to_workspace(workspace_file, file_name)
 
-    #######################################################################################################
-    #                                   Send result to server 
-    #######################################################################################################
+        #######################################################################################################
+        #                                   Send result to server 
+        #######################################################################################################
 
-    files_to_upload = processed_files + [workspace_file]
-    print(files_to_upload)
+        files_to_upload = processed_files + [workspace_file]
+        print(files_to_upload)
 
-    send_file_url = "{0}/api/pro/tickets/{1}/files/results".format(main_url, ticket_id)
-    for file in files_to_upload:
-        with open(file, 'rb') as f:
-            r = requests.post(send_file_url, files={"myfile": f})
-    print("Sending:", r.text)
+        send_file_url = "{0}/api/pro/tickets/{1}/files/results".format(main_url, ticket_id)
+        for file in files_to_upload:
+            with open(file, 'rb') as f:
+                r = requests.post(send_file_url, files={"myfile": f})
+        print("Sending:", r.text)
 
-    #######################################################################################################
-    #                           Notify client that the ticket is ready
-    #######################################################################################################
+        #######################################################################################################
+        #                           Notify client that the ticket is ready
+        #######################################################################################################
 
-    success_url = "{0}/api/pro/tickets/{1}/status".format(main_url, ticket_id)
-    r = requests.post(success_url, data={"status": "success"})
-    print("Notify client:", r.text)
+        success_url = "{0}/api/pro/tickets/{1}/status".format(main_url, ticket_id)
+        r = requests.post(success_url, data={"status": "success"})
+        print("Notify client:", r.text)
