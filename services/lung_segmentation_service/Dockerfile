@@ -18,7 +18,7 @@ WORKDIR /service
 # Install the neck cutting script and service script
 COPY . /service/
 
-RUN /opt/anaconda/envs/wmlce/bin/pip install /service/SimpleITK-1.2.0+gd6026-cp37-cp37m-linux_ppc64le.whl
+RUN /opt/anaconda/envs/wmlce/bin/pip install /service/install_files/SimpleITK-1.2.0+gd6026-cp37-cp37m-linux_ppc64le.whl
 RUN /opt/anaconda/envs/wmlce/bin/pip install pynrrd
 
 CMD /opt/anaconda/envs/wmlce/bin/python -u /service/deamon.py
