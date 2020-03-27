@@ -26,7 +26,7 @@ def create_IOHistory_node(file_minidom, segmentation_file_path):
     label_image_folder.setAttribute("key", "LabelImage")
 
     entry_1 = file_minidom.createElement("entry")
-    entry_1.setAttribute("key", "ArraySize"):
+    entry_1.setAttribute("key", "ArraySize")
     entry_1.setAttribute("value", "1")
     label_image_folder.appendChild(entry_1)
 
