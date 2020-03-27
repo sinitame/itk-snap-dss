@@ -120,7 +120,7 @@ def add_segmentation_to_workspace(ticket_path, workspace_file, file_name):
         elif folder.getAttribute("key") == "Layers":
             folder.appendChild(segmentation_layer_node)
 
-    result_workspace_file = os.path.join(ticket_path, "results", os.path.basename(file))
+    result_workspace_file = os.path.join(ticket_path, "results", os.path.basename(workspace_file))
     new_workspace = open(result_workspace_file,"w")
     original_workspace.writexml(new_workspace, encoding="UTF-8")
     new_workspace.close()
