@@ -186,6 +186,7 @@ while True:
 
             file_name_with_ext = os.path.basename(file)
             file_name = file_name_with_ext.split(".")[0]
+            os.makedirs(os.path.join(ticket_directory, "results"), exist_ok=True)
             result_file_path = os.path.join(ticket_directory, "results", file_name + "_mask.nrrd")
 
             open(result_file_path, 'wb').write(r.content)
