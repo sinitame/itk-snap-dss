@@ -15,4 +15,4 @@ COPY . /deamons
 RUN pip install flask flask_restful requests
 
 # Run server
-CMD python -u /deamons/deamon_1.py
+#CMD python -u /deamons/deamon_1.py
