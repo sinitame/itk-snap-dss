@@ -142,10 +142,12 @@ while True:
     claim_response_content = claim_response.content.decode('utf-8')
 
     if claim_response_content=='None':
+        print("Nothing to do")
         time.sleep(10)
     else:
+        print("Received ticket")
         ticket_id = claim_response_content.split(",")[0]
-        ticket_directory = "/datastore/tickets/{0}".format('%08d' % ticket_id)
+        ticket_directory = "/datastore/tickets/{0}".format('%08d' % int(ticket_id))
 
         ticket_input_directory = os.path.join(ticket_directory, "inputs")
         loaded_files = glob.glob("{0}/*".format(ticket_input_directory))
