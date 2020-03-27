@@ -2,7 +2,7 @@ import requests, os, glob, argparse, time
 from xml.dom import minidom
 
 main_url="http://itk.10.7.11.23.nip.io"
-service_url="http://lung-segmentation-service.10.7.11.23.nip.io"
+service_url="http://lung-segmentation-api.10.7.11.23.nip.io"
 service_hash="6e8775d466d865ce30eab35aa6d9a871a5d39816"
 provider="IBM-LAB"
 
@@ -26,7 +26,7 @@ def create_IOHistory_node(file_minidom, segmentation_file_path):
     label_image_folder.setAttribute("key", "LabelImage")
 
     entry_1 = file_minidom.createElement("entry")
-    entry_1.setAttribute("key", "ArraySize")
+    entry_1.setAttribute("key", "ArraySize"):
     entry_1.setAttribute("value", "1")
     label_image_folder.appendChild(entry_1)
 
@@ -182,7 +182,7 @@ while True:
 
             service_request_url = "{}/inference".format(service_url)
             with open(file, 'rb') as f:
-                r = requests.post(send_file_url, files={"itk_image": f})
+                r = requests.post(service_request_url, files={"itk_image": f})
 
             file_name_with_ext = os.path.basename(file)
             file_name = file_name_with_ext.split(".")[0]
