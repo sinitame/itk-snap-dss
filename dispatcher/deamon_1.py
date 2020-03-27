@@ -149,7 +149,7 @@ while True:
         ticket_id = claim_response_content.split(",")[0]
         ticket_directory = "/datastore/tickets/{0}".format('%08d' % int(ticket_id))
 
-        ticket_input_directory = os.path.join(ticket_directory, "inputs")
+        ticket_input_directory = os.path.join(ticket_directory, "input")
         loaded_files = glob.glob("{0}/*".format(ticket_input_directory))
         print(loaded_files)
         log_info(ticket_id, "Files received : ready for processing")
