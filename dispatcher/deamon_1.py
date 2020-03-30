@@ -76,7 +76,7 @@ while True:
                 files_to_process.append(file)
 
         logger.debug("Workspace file:" + workspace.file_name)
-        logger.debug("Files to process" + files_to_process)
+        logger.debug("Files to process:" + ",".join(files_to_process))
 
         logger.info("Starting inference")
 
@@ -97,7 +97,7 @@ while True:
 
             try:
                 result_endpoint = r.json["Endpoint"]
-                logger.debug(result_endpoint)
+                logger.debug('Endpoint :' + result_endpoint)
 
                 while (not inference_ready) and (inference_time < inference_timeout):
                     r = request.get(service_url + result_endpoint)
@@ -119,7 +119,7 @@ while True:
                 logger.error(e)
                 error_url = "{0}/api/pro/tickets/{1}/status".format(server_url, ticket_id)
                 r = requests.post(error_url, data={"status":"failed"})
-                logger.debug("Notify client of failure", r.text)
+                logger.debug("Notify client of failure: " + r.text)
                 logger.removeHandler(ticket_logger)
                 inference_failed = True
 
@@ -143,7 +143,7 @@ while True:
             logger.info("End processing")
             success_url = "{0}/api/pro/tickets/{1}/status".format(server_url, ticket_id)
             r = requests.post(success_url, data={"status": "success"})
-            logging.debug("Notify client:", r.text)
+            logging.debug("Notify client: " + r.text)
 
 
         logger.removeHandler(ticket_logger)
