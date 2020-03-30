@@ -1,8 +1,26 @@
 import requests, os, glob, argparse, time
+import logging
 from utils.workspace import Workspace
-from xml.dom import minidom
+from utils.itk_snap_logger import ITKSnapHandler
 
-main_url="http://itk.10.7.11.23.nip.io"
+###################################################################################################
+#                           Setting logger
+###################################################################################################
+
+logger = logging.getLogger('simple_example')
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', \
+                            level=logging.INFO, \
+                            datefmt='%m/%d/%Y %I:%M:%S %p')
+
+# Setting stream logger
+stream_logger = logging.StreamHandler()
+stream_logger.setLevel(logging.DEBUG)
+stream_logger.setFormatter(formatter)
+logger.addHandler(stream_logger)
+
+
+server_url="http://itk.10.7.11.23.nip.io"
 service_url="http://lung-segmentation-api.10.7.11.23.nip.io"
 service_hash="6e8775d466d865ce30eab35aa6d9a871a5d39816"
 provider="IBM-LAB"
@@ -13,12 +31,7 @@ REQUESTS_INTERVAL = 10 # time in seconds
 def log_progress(ticket_id, progress):
     log_progress_api = "{0}/api/pro/tickets/{1}/progress".format(main_url, ticket_id)
     log_response = requests.post(log_progress_api, data={"chunk_start":"0.0","chunk_end":"1.0","progress":str(progress)})
-    print('Notified log progress {0} for ticket {1}: '.format(progress, ticket_id),log_response.text)
-
-def log_info(ticket_id, info):
-    log_url = "{0}/api/pro/tickets/{1}/info".format(main_url, ticket_id)
-    r = requests.post(log_url, data={"message": info})
-    print('Notified info ({0}) for ticker {1}: '.format(info, ticket_id), r.text)
+    logger.debug('Notified log progress {0} for ticket {1}: '.format(progress, ticket_id),log_response.text)
 
 while True:
     files_to_process=[]
@@ -30,46 +43,42 @@ while True:
     #                           Claiming ticket and loading data
     ###################################################################################################
 
-    claim_api_url = "{0}/api/pro/services/claims".format(main_url)
+    claim_api_url = "{0}/api/pro/services/claims".format(server_url)
 
     claim_response = requests.post(claim_api_url, data={"services":service_hash,"provider":provider,"code":"01"})
     claim_response_content = claim_response.content.decode('utf-8')
 
     if claim_response_content=='None':
-        print("Nothing to do")
+        logging.info("Waiting for ticket")
         time.sleep(10)
     else:
-        print("Received ticket")
+        # Setting ticket info
         ticket_id = claim_response_content.split(",")[0]
         ticket_directory = "/datastore/tickets/{0}".format('%08d' % int(ticket_id))
 
+        # Setting ITK Snap logger to log in server API for the ticket
+        ticket_logger = ITKSnapHandler(server_url, ticket_id)
+        ticket_logger.setLevel(logging.INFO)
+        logger.addHandler(ticket_logger)
+
         ticket_input_directory = os.path.join(ticket_directory, "input")
         loaded_files = glob.glob("{0}/*".format(ticket_input_directory))
-        print(loaded_files)
-        log_info(ticket_id, "Files received : ready for processing")
+        logging.info("Files received : ready for processing")
 
         #####################################################################################################
         #                                           Process data
         #####################################################################################################
 
-        nb_classes=1
-        start_filters=32
-        model_path="/service/lung_segmentation_model"
-        threshold=True
-        erosion=True
-        verbose=True
-
-        print(loaded_files)
         for file in loaded_files:
             if file.endswith(".itksnap"):
                 workspace = Workspace(file)
             else:
                 files_to_process.append(file)
 
-        print("Workspace file:", workspace.file_name)
-        print("Files to process", files_to_process)
+        logger.debug("Workspace file:" + workspace.file_name)
+        logger.debug("Files to process" + files_to_process)
 
-        log_info(ticket_id, "Starting inference")
+        logger.info("Starting inference")
 
         for i, file in enumerate(files_to_process):
             inference_ready = False
@@ -87,18 +96,17 @@ while True:
             result_file_path = os.path.join(ticket_directory, "results", file_name + "_mask.nrrd")
 
             try:
-                inference_time = 0
-                result_endpoint = r.json()["Endpoint"]
-                print(result_endpoint)
+                result_endpoint = r.json["Endpoint"]
+                logger.debug(result_endpoint)
 
                 while (not inference_ready) and (inference_time < inference_timeout):
-                    r = requests.get(service_url + result_endpoint)
+                    r = request.get(service_url + result_endpoint)
 
                     if r.status_code == 200:
                         inference_ready = True
 
                     inference_time += REQUESTS_INTERVAL
-                    time.sleep(REQUESTS_INTERVAL)
+                    sleep(REQUESTS_INTERVAL)
 
                 if inference_ready:
                     open(result_file_path, 'wb').write(r.content)
@@ -108,10 +116,11 @@ while True:
                     raise("Inference timeout exceeded")
 
             except Exception as e:
-                print(e)
-                error_url = "{0}/api/pro/tickets/{1}/status".format(main_url, ticket_id)
+                logger.error(e)
+                error_url = "{0}/api/pro/tickets/{1}/status".format(server_url, ticket_id)
                 r = requests.post(error_url, data={"status":"failed"})
-                print("Notify client of failure", r.text)
+                logger.debug("Notify client of failure", r.text)
+                logger.removeHandler(ticket_logger)
                 inference_failed = True
 
 
@@ -120,10 +129,10 @@ while True:
         #######################################################################################################
 
         if not(inference_failed):
-            log_info(ticket_id, "Starting workspace update")
+            logger.info("Starting workspace update")
             for file in processed_files:
                 file_name = file.split('/')[-1]
-                print(file_name)
+                logger.info("Adding {0} to workspace".format(file_name))
                 workspace.add_segmentation(ticket_directory, file_name)
 
         #######################################################################################################
@@ -131,7 +140,10 @@ while True:
         #######################################################################################################
 
         if not(inference_failed):
-            log_info(ticket_id, "End processing")
-            success_url = "{0}/api/pro/tickets/{1}/status".format(main_url, ticket_id)
+            logger.info("End processing")
+            success_url = "{0}/api/pro/tickets/{1}/status".format(server_url, ticket_id)
             r = requests.post(success_url, data={"status": "success"})
-            print("Notify client:", r.text)
+            logging.debug("Notify client:", r.text)
+
+
+        logger.removeHandler(ticket_logger)
