@@ -1,3 +1,5 @@
+import os
+from xml.dom import minidom
 
 class Workspace(object):
     def __init__(self, workspace_file_path):
