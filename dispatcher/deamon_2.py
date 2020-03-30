@@ -7,7 +7,7 @@ from utils.itk_snap_logger import ITKSnapHandler
 #                           Setting logger
 ###################################################################################################
 
-logger = logging.getLogger('Lung Segmentation')
+logger = logging.getLogger('Nodule Detection')
 logging.basicConfig(format='%(asctime)s - %(name)s - (%(levelname)s) : %(message)s', \
                             level=logging.INFO, \
                             datefmt='%m/%d/%Y %I:%M:%S %p')
@@ -19,8 +19,8 @@ logger.addHandler(stream_logger)
 
 
 server_url="http://itk.10.7.11.23.nip.io"
-service_url="http://lung-segmentation-api.10.7.11.23.nip.io"
-service_hash="6e8775d466d865ce30eab35aa6d9a871a5d39816"
+service_url="http://nodule-detection-api.10.7.11.23.nip.io"
+service_hash="e9330a9cb133785e73efa95157b73919bb380ccd"
 provider="IBM-LAB"
 
 INFERENCE_TIMEOUT = 180 # time in seconds
