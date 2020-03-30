@@ -17,7 +17,7 @@ class Workspace(object):
         segmentation_layer_node = self.create_segmentation_layer_node(segmentation_file_path)
 
         # Insert new enties in workspace XML
-        folders = original_workspace.getElementsByTagName("folder")
+        folders = self.workspace.getElementsByTagName("folder")
         for folder in folders:
             if folder.getAttribute("key") == "ProjectMetaData":
                 folder.appendChild(IOHistory_node)
