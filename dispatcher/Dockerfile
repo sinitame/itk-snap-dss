@@ -1,10 +1,6 @@
 # Use official Python as parent image
 FROM python:3.7
 
-# Make sure we have git
-RUN apt-get update
-RUN apt-get install -y git-core curl python-dev
-
 # Create workdir
 WORKDIR /deamons
 
