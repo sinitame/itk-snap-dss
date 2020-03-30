@@ -4,6 +4,7 @@ import requests
 class ITKSnapHandler(StreamHandler):
 
     def __init__(self, server_url, ticket_id):
+        super(ITKSnapHandler, self).__init__()
         self.server_url = server_url
         self.ticket_id = ticket_id
 
