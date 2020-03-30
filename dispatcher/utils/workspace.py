@@ -5,7 +5,7 @@ class Workspace(object):
     def __init__(self, workspace_file_path):
         self.file_path = workspace_file_path
         self.file_name = os.path.basename(workspace_file_path)
-        self.workspace = minidom.parse(workspace_file)
+        self.workspace = minidom.parse(workspace_file_path)
 
     def add_segmentation(self, ticket_path, file_name):
 
