@@ -47,7 +47,7 @@ while True:
     claim_response_content = claim_response.content.decode('utf-8')
 
     if claim_response_content=='None':
-        logging.info("Waiting for ticket")
+        logger.info("Waiting for ticket")
         time.sleep(10)
     else:
         # Setting ticket info
@@ -61,7 +61,7 @@ while True:
 
         ticket_input_directory = os.path.join(ticket_directory, "input")
         loaded_files = glob.glob("{0}/*".format(ticket_input_directory))
-        logging.info("Files received : ready for processing")
+        logger.info("Files received : ready for processing")
 
         #####################################################################################################
         #                                           Process data
@@ -141,7 +141,7 @@ while True:
             logger.info("End processing")
             success_url = "{0}/api/pro/tickets/{1}/status".format(server_url, ticket_id)
             r = requests.post(success_url, data={"status": "success"})
-            logging.debug("Notify client: " + r.text)
+            logger.debug("Notify client: " + r.text)
 
 
         logger.removeHandler(ticket_logger)
