@@ -12,7 +12,7 @@ WORKDIR /deamons
 COPY . /deamons
 
 # Install the python dependencies
-RUN pip install flask flask_restful requests
+RUN pip install requests
 
 # Run server
 CMD python -u /deamons/master_deamon.py
