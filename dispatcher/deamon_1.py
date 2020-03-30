@@ -197,6 +197,7 @@ while True:
             result_file_path = os.path.join(ticket_directory, "results", file_name + "_mask.nrrd")
 
             try:
+                inference_time = 0
                 result_endpoint = r.json()["Endpoint"]
                 print(result_endpoint)
 
