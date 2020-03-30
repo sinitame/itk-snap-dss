@@ -87,17 +87,18 @@ while True:
             result_file_path = os.path.join(ticket_directory, "results", file_name + "_mask.nrrd")
 
             try:
-                result_endpoint = r.json["Endpoint"]
+                inference_time = 0
+                result_endpoint = r.json()["Endpoint"]
                 print(result_endpoint)
 
                 while (not inference_ready) and (inference_time < inference_timeout):
-                    r = request.get(service_url + result_endpoint)
+                    r = requests.get(service_url + result_endpoint)
 
                     if r.status_code == 200:
                         inference_ready = True
 
                     inference_time += REQUESTS_INTERVAL
-                    sleep(REQUESTS_INTERVAL)
+                    time.sleep(REQUESTS_INTERVAL)
 
                 if inference_ready:
                     open(result_file_path, 'wb').write(r.content)
