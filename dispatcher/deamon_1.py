@@ -208,7 +208,7 @@ while True:
                         inference_ready = True
 
                     inference_time += REQUESTS_INTERVAL
-                    sleep(REQUESTS_INTERVAL)
+                    time.sleep(REQUESTS_INTERVAL)
 
                 if inference_ready:
                     open(result_file_path, 'wb').write(r.content)
