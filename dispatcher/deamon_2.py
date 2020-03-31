@@ -82,6 +82,7 @@ while True:
             inference_ready = False
             inference_failed = False
             inference_timeout = INFERENCE_TIMEOUT
+            inference_time = 0
 
             service_request_url = "{}/inference".format(service_url)
             with open(file, 'rb') as f:
@@ -98,7 +99,7 @@ while True:
                 logger.debug('Endpoint :' + result_endpoint)
 
                 while (not inference_ready) and (inference_time < inference_timeout):
-                    r = request.get(service_url + result_endpoint)
+                    r = requests.get(service_url + result_endpoint)
 
                     if r.status_code == 200:
                         inference_ready = True

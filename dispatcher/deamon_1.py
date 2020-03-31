@@ -99,7 +99,7 @@ while True:
                 logger.debug('Endpoint :' + result_endpoint)
 
                 while (not inference_ready) and (inference_time < inference_timeout):
-                    r = request.get(service_url + result_endpoint)
+                    r = requests.get(service_url + result_endpoint)
 
                     if r.status_code == 200:
                         inference_ready = True
