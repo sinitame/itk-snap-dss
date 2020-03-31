@@ -82,6 +82,7 @@ while True:
             inference_ready = False
             inference_failed = False
             inference_timeout = INFERENCE_TIMEOUT
+            inference_time = 0
 
             service_request_url = "{}/inference".format(service_url)
             with open(file, 'rb') as f:
