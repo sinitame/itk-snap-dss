@@ -1,3 +1,3 @@
 [submodule "lung-segmentation-api"]
 	path = services/lung-segmentation-api
-	url = https://gitlab.com/PSLC/ia-medical/lung-segmentation-api.git
+	url = https://lung-segmentation-api:MyogG6MujmybqNyGS2ff@gitlab.com/PSLC/ia-medical/lung-segmentation-api.git
