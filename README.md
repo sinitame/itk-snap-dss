@@ -22,7 +22,24 @@ DSS is a web-based application that allows data-scientists to make their advance
  
 ### Prerequisites
 
-What things you need to install the software and how to install them
+This project have been deployed on an [Open Shift](https://www.openshift.com) cluster running with `v3.11.161`
+
+
+Each components of the architecture is fully Dockerised and require specific preriquisites:
+
+*  Web Server
+    *  No specific hardware requirement
+    *  Persistent volume
+    *  Expose port `8080` to an accessible route
+*  DB
+    *  No specific hardware requirement
+*  Dispatcher
+    *  No specific hardware requirement
+    *  Persistent volume
+*  Services:
+    *  Power node (AC922) with a compatible GPU (see [docker image requirements](https://hub.docker.com/r/ibmcom/powerai) for more informations)
+    *  Expose port `8080` to an accessible route
+
 
 ```
 Give examples
