@@ -11,7 +11,7 @@ Distributed Segmentation Services for ITK-SNAP
     <p><a href="www.itksnap.org">ITK-SNAP</a> and accompanying command-line tools are used to communicate with the DSS. </p>
     </div>
     <div class="pure-u-2-5">
-    <img src="/static/img/dss_arch.png" class="pure-img">
+    <img src="/static/img/global-architecture.png" class="pure-img">
     </div>
 </div>
 

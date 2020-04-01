@@ -30,7 +30,7 @@ web.config.debug = False
 
 # Session support
 web.config.session_parameters['cookie_name'] = 'webpy_session_id'
-web.config.session_parameters['cookie_domain'] = 'dss.itksnap.org'
+web.config.session_parameters['cookie_domain'] = 'itk.10.7.11.23.nip.io'
 web.config.session_parameters['timeout'] = 31536000 
 web.config.session_parameters['ignore_expiry'] = True
 web.config.session_parameters['ignore_change_ip'] = True
