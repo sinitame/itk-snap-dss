@@ -18,8 +18,19 @@ stream_logger.setLevel(logging.DEBUG)
 logger.addHandler(stream_logger)
 
 
-server_url="http://itk.10.7.11.23.nip.io"
-service_url="http://nodule-detection-api.10.7.11.23.nip.io"
+# Setting Service and Server infos
+server_url = os.environ.get('SERVER_URL')
+if server_url:
+    logger.debug(server_url)
+else:
+    logger.error("Server URL not provided")
+
+service_url = os.environ.get('NODULE_DETECTION_SERVICE_URL')
+if service_url:
+    logger.debug(service_url)
+else:
+    logger.error("Nodule Detection Service URL not provided")
+
 service_hash="e9330a9cb133785e73efa95157b73919bb380ccd"
 provider="IBM-LAB"
 

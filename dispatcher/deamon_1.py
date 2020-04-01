@@ -17,15 +17,27 @@ stream_logger = logging.StreamHandler()
 stream_logger.setLevel(logging.DEBUG)
 logger.addHandler(stream_logger)
 
+# Setting Service and Server infos
+server_url = os.environ.get('SERVER_URL')
+if server_url:
+    logger.debug(server_url)
+else:
+    logger.error("Server URL not provided")
 
-server_url="http://itk.10.7.11.23.nip.io"
-service_url="http://lung-segmentation-api.10.7.11.23.nip.io"
+service_url = os.environ.get('LUNG_SEGMENTATION_SERVICE_URL')
+if service_url:
+    logger.debug(service_url)
+else:
+    logger.error("Lung Segmentation Service URL not provided")
+
 service_hash="6e8775d466d865ce30eab35aa6d9a871a5d39816"
 provider="IBM-LAB"
 
+# Defining some global variables
 INFERENCE_TIMEOUT = 180 # time in seconds
 REQUESTS_INTERVAL = 10 # time in seconds
 
+# Defining an helper function
 def log_progress(ticket_id, progress):
     log_progress_api = "{0}/api/pro/tickets/{1}/progress".format(main_url, ticket_id)
     log_response = requests.post(log_progress_api, data={"chunk_start":"0.0","chunk_end":"1.0","progress":str(progress)})
