@@ -1,19 +1,15 @@
 # Use official Python as parent image
 FROM python:2.7-slim
 
-# Make sure we have git
-RUN apt-get update
-RUN apt-get install -y git-core curl gcc
-RUN apt-get install -y libpq-dev python-dev
+# Install dependancies
+RUN apt-get update && \
+    apt-get install -y git-core curl gcc libpq-dev python-dev
+
 # Create workdir
 WORKDIR /app
 
 # Checkout the server 
 COPY . /app
-
-# Download the wait-for-it script
-ADD https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh /app/wait-for-it.sh
-RUN chmod +x /app/wait-for-it.sh
 
 # Install the python dependencies
 RUN pip install --trusted-host pypi.python.org -r /app/requirements.txt
