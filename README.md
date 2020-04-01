@@ -8,6 +8,8 @@ DSS is a web-based application that allows data-scientists to make their advance
 
 ### Global architecture
 
+![](imgs/global-architecture.png)
+
 ### Components details
 
 **Web Server**
