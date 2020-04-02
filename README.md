@@ -14,9 +14,17 @@ DSS is a web-based application that allows data-scientists to make their advance
 
 **Web Server**
 
+The web server as two main role in the Distributed Segmentation Service:
+*  It's a web interface to visualize and manage available services, providers, ticket history and admin users. It also gives some informations about the different available services and about the DSS itself. The admin access is normally handled with OAuth2 but for testing purpose, a default user `test@example.com` have been created.
+*  It's a RestAPI server that can receive tickets from ITK-Snap clients. It handles the different steps of the ticket processing logic and store them in a PosgresDB.
+
 **Dispatcher**
 
+The dispatcher is a set of deamons (one per service) that regularly check for new tickets on the server. When a ticket is available it is claimed by the corresponding deamon and the deamon handles all the steps required for ticket processing (data download, inference, workspace update, data upload).
+
 **Services**
+
+The services are the servers that perform the different tasks (for now `lung-segmantation` and `nodule-detection`). They have a RestAPI server that can be reach by the dispacher.
 
 ## Getting started
  
