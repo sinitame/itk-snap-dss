@@ -1,3 +1,20 @@
-site_name: My Docs
+site_name: ITK-SNAP DSS Documentation
 
-theme: material
+theme: 
+  name: material
+  feature:
+    tabs: true
+
+# Website page tree
+nav:
+  - Home: index.md
+  - User Start Guide:
+    - ITK-SNAP DSS Overview: user-start-guide/itk-snap-dss-overview.md
+    - Running DSS from ITK-SNAP: user-start-guide/running-dss-from-itk-snap.md
+    - Running DSS from Command Line: user-start-guide/running-dss-from-command-line.md
+  - Developer Start Guide:
+    - ITK-SNAP DSS Detailed Architecture: developer-start-guide/dss-details.md
+    - Service Creation Guide: developer-start-guide/service-creation.md
+  - Services:
+    - Lung Segmentation: services/lung-segmentation-service.md
+    - Nodule Detection Service: services/nodule-detection-service.md
