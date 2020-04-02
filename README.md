@@ -30,7 +30,8 @@ The services are the servers that perform the different tasks (for now `lung-seg
  
 ### Prerequisites
 
-This project have been deployed on an [Open Shift](https://www.openshift.com) cluster running with `v3.11.161`
+This project have been deployed on an [Open Shift](https://www.openshift.com) cluster running with `v3.11.161`.
+We give some of the commands that we used on the Open Shift Container Platform (OCP) to deploy our project in the following part.
 
 
 Each components of the architecture is fully Dockerised and require specific preriquisites:
@@ -48,49 +49,65 @@ Each components of the architecture is fully Dockerised and require specific pre
     *  Power node (AC922) with a compatible GPU (see [docker image requirements](https://hub.docker.com/r/ibmcom/powerai) for more informations)
     *  Expose port `8080` to an accessible route
 
+### Shared volumes
+In order to avoid data exchanges between the Dispatcher and the Web Server, we set up a shared storage volume between the two components in order to make both of them access tickets inputs and outputs.
+This shared volume needs to be created by setting up a persistent volume within the project that you can then mount into the two components.
 
-```
-Give examples
-```
+Details about the directory where this persistent volume needs to be mounted are given in the following parts.
 
-### Installing
+### Routes
+Some of the components exposes ports (`8080` for RestAPIs). Theses ports needs to be routed into an accessible URL and the corresponding URLs need to be set up in some `ENV_VARIABLES` of the different components 
 
-A step by step series of examples that tell you how to get a development env running
+* **ITK-SNAP Server route:** route used to access the web-interface and contact de web server API (ours is `http://itk.10.7.11.23.nip.io`)
+    * Needs to be updated in ITK-SNAP DSS service interface 
+    * Needs to be updated in Dispatcher config :  `SERVER_URL`
+* **Service API routes:** routes used to contact services APIs (ours are `http://lung-segmentation-api.10.7.11.23.nip.io` and `http://nodule-detection-api.10.7.11.23.nip.io`)
+    * Needs to be updated in Dispatcher config:
+        * `LUNG_SEGMENTATION_SERVICE_URL`
+        * `NODULE_DETECTION_SERVICE_URL`
 
-Say what the step will be
+### Image creation
 
-```
-Give the example
-```
+* **Dispatcher deployment:** Create app from Dockerfile `dispatcher/Dockerfile`.
+    * OCP example : `oc new-app --name itk-snap-dispatcher https://itk-snap-dss:2EVH6Ky6zJPL7wn7QAsq@gitlab.com/PSLC/ia-medical/itk-snap-dss.git --context-dir dispatcher`
+    * Set-up shared volume: mount persistent volume in `/datastore`
+    * Set-up environment variables: 
+        * `SERVER_URL`
+        * `LUNG_SEGMENTATION_SERVICE_URL`
+        * `NODULE_DETECTION_SERVICE_URL`
+* **PosgresDB deployment:** Create app from Dockerfile `db/Dockerfile` (note that db is not persistent in this configuration) .
+    * OCP example: `oc new-app --name itk-snap-dc https://itk-snap-dss:2EVH6Ky6zJPL7wn7QAsq@gitlab.com/PSLC/ia-medical/itk-snap-dss.git --context-dir db`
+    * Set-up environment variables:
+        * `POSTGRES_HOST_AUTH_METHOD=true`
+* **Server deployment:** Create app from Dockerfile `web-server/Dockerfile`.
+    * OCP example `oc new-app --name itk-snap-web-server https://itk-snap-dss:2EVH6Ky6zJPL7wn7QAsq@gitlab.com/PSLC/ia-medical/itk-snap-dss.git --context-dir web-server`
+    * Set-up shared volume: mount persistent volume in `/app/datastore`
+    * Set-up environment variables:
+        * `POSTGRES_PORT_5432_TCP_ADDR=itk-snap-db`
+        * `POSTGRES_PORT_5432_TCP_PORT=5432`
+        * `ITK_SNAP_SERVER_DATABASE_NAME=admin_db`
+        * `ITK_SNAP_SERVER_DATABASE_USERNAME=admin_user`    
+        * `ITK_SNAP_SERVER_DATABASE_PASSWORD=` (leave empty)
+        * `ITK_SNAP_SERVER_NOAUTH=1`
+* **Lung segmentation service deployment:** Create app from Dockerfile `services/lung-segmentation-api/Dockerfile` :
+    * OCP example: `oc new-app --name <service-name> https://lung-segmentation-api:MyogG6MujmybqNyGS2ff@gitlab.com/PSLC/ia-medical/lung-segmentation-api.git#demo_moscow`
+* **Nodule detection service deployment:** Create app from Dockerfile `services/nodule-segmentation-api/Dockerfile` :
+    * OCP example: `oc new-app --name nodule-detection-service-api https://nodule-detection-api:RqPFmiS3UouDgcEBnHhP@gitlab.com/PSLC/ia-medical/nodule-detection-api.git#demo-moscow`
 
-And repeat
+## Running the service
 
-```
-until finished
-```
+In order to register services into to ITK-SNAP server, you need to provide a configuration file and to register a service provider. Configuration files are available in Github repositories to make things easier.
 
-End with an example of getting some data out of the system or using it for a little demo
+In the admin page of the running DSS server fill the following fields with the relevant information
+* New provider : `IBM-LAB`
+* New services assigned to `IBM-LAB` :
+    * Provider: newly created provider (IBM-LAB)
+    * Git repository (Lung segmentation configuration): https://github.com/sinitame/lung-segmentation-service
+    * Git repository (Nodule detection configuration): https://github.com/sinitame/nodule-detection-service
+    * Reference: leave blank
 
-## Running the tests
+![](imgs/admin-screen-shot.png)
 
-Explain how to run the automated tests for this system
+If everything is set up properly, you should now see your available services in the Services part of the Web Server available at <your-server-url> (ours is `http://itk.10.7.11.23.nip.io`).
 
-### Break down into end to end tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-## Deployment
-
-Add additional notes about how to deploy this on a live system
+![](imgs/services-screen-shot.png)
