@@ -5,4 +5,3 @@ This is the source code of the middleware layer for the IBM ITK-SNAP distributed
 
 [ITK-SNAP](itksnap.org) is an interactive tool for segmentation of volumetric medical imaging datasets, like CT and MRI. 
 DSS is a web-based application that allows data-scientists to make their advanced image processing algorithms available as services to ITK-SNAP users. 
-
