@@ -11,5 +11,5 @@ class ITKSnapHandler(StreamHandler):
 
     def emit(self, info):
         log_url = "{0}/api/pro/tickets/{1}/info".format(self.server_url, self.ticket_id)
-        r = requests.post(log_url, data={"message": info.split(',')[-1][2:-2]})
+        r = requests.post(log_url, data={"message": info.getMessage()})
 
