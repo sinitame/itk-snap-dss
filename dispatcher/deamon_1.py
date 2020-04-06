@@ -96,7 +96,7 @@ while True:
             inference_timeout = INFERENCE_TIMEOUT
             inference_time = 0
 
-            service_request_url = "{}/inference".format(service_url)
+            service_request_url = "{}/lung_segmentation/inference".format(service_url)
             with open(file, 'rb') as f:
                 r = requests.post(service_request_url, files={"itk_image": f})
 

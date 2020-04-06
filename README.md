@@ -22,19 +22,19 @@ The web server as two main role in the Distributed Segmentation Service:
 
 The dispatcher is a set of deamons (one per service) that regularly check for new tickets on the server. When a ticket is available it is claimed by the corresponding deamon and the deamon handles all the steps required for ticket processing (data download, inference, workspace update, data upload).
 
-**Services**
+**Inference server**
 
-The services are the servers that perform the different tasks (for now `lung-segmantation` and `nodule-detection`). They have a RestAPI server that can be reach by the dispacher.
+The inference server is the server that perform the different inference tasks (at this stage: `lung-segmantation` and `nodule-detection`). It exposes a REST API that can be reached by the dispacher through port `8080`.
 
 ## Getting started
  
 ### Prerequisites
 
 This project have been deployed on an [Open Shift](https://www.openshift.com) cluster running with `v3.11.161`.
-We give some of the commands that we used on the Open Shift Container Platform (OCP) to deploy our project in the following part.
+We give some example of the commands that we used on out Open Shift Container Platform (OCP) to deploy our project in the following parts, but this documentation aims to be enough generoc so you can adapt the deployment steps to match your own infrastructure.
 
 
-Each components of the architecture is fully Dockerised and require specific preriquisites:
+Each components of the architecture is fully Dockerised and have specific requirements:
 
 *  Web Server
     *  No specific hardware requirement
@@ -45,26 +45,27 @@ Each components of the architecture is fully Dockerised and require specific pre
 *  Dispatcher
     *  No specific hardware requirement
     *  Persistent volume
-*  Services:
+*  Inference Server:
     *  Power node (AC922) with a compatible GPU (see [docker image requirements](https://hub.docker.com/r/ibmcom/powerai) for more informations)
+    *  Persistent volume mounted at `/wmlce/data/output`
     *  Expose port `8080` to an accessible route
 
 ### Shared volumes
-In order to avoid data exchanges between the Dispatcher and the Web Server, we set up a shared storage volume between the two components in order to make both of them access tickets inputs and outputs.
+In order to avoid data exchanges between the __Dispatcher__ and the __Web Server__, we set up a shared storage volume between the two components in order to make both of them access tickets inputs and outputs.
 This shared volume needs to be created by setting up a persistent volume within the project that you can then mount into the two components.
 
 Details about the directory where this persistent volume needs to be mounted are given in the following parts.
 
 ### Routes
-Some of the components exposes ports (`8080` for RestAPIs). Theses ports needs to be routed into an accessible URL and the corresponding URLs need to be set up in some `ENV_VARIABLES` of the different components 
+Some of the components exposes ports (`8080` for REST APIs). Theses ports needs to be routed into an __accessible URL__ and the corresponding URLs need to be set up in some __environment variables__ (written `ENV_VARIABLES`) for the different components 
 
 * **ITK-SNAP Server route:** route used to access the web-interface and contact de web server API (ours is `http://itk.10.7.11.23.nip.io`)
     * Needs to be updated in ITK-SNAP DSS service interface 
     * Needs to be updated in Dispatcher config :  `SERVER_URL`
-* **Service API routes:** routes used to contact services APIs (ours are `http://lung-segmentation-api.10.7.11.23.nip.io` and `http://nodule-detection-api.10.7.11.23.nip.io`)
+* **Inference Server route:** route used to contact Inference Server API (ours is `http://inference-server.10.7.11.23.nip.io`)
     * Needs to be updated in Dispatcher config:
-        * `LUNG_SEGMENTATION_SERVICE_URL`
-        * `NODULE_DETECTION_SERVICE_URL`
+        * `LUNG_SEGMENTATION_SERVICE_URL`: route to inference server (ours is `http://inference-server.10.7.11.23.nip.io`)
+        * `NODULE_DETECTION_SERVICE_URL`: route to inference server (ours is `http://inference-server.10.7.11.23.nip.io`)
 
 ### Image creation
 
@@ -89,10 +90,8 @@ Some of the components exposes ports (`8080` for RestAPIs). Theses ports needs t
         * `ITK_SNAP_SERVER_DATABASE_USERNAME=admin_user`    
         * `ITK_SNAP_SERVER_DATABASE_PASSWORD=` (leave empty)
         * `ITK_SNAP_SERVER_NOAUTH=1`
-* **Lung segmentation service deployment:** Create app from Dockerfile `services/lung-segmentation-api/Dockerfile` :
-    * OCP example: `oc new-app --name <service-name> https://lung-segmentation-api:MyogG6MujmybqNyGS2ff@gitlab.com/PSLC/ia-medical/lung-segmentation-api.git#demo_moscow`
-* **Nodule detection service deployment:** Create app from Dockerfile `services/nodule-segmentation-api/Dockerfile` :
-    * OCP example: `oc new-app --name nodule-detection-service-api https://nodule-detection-api:RqPFmiS3UouDgcEBnHhP@gitlab.com/PSLC/ia-medical/nodule-detection-api.git#demo-moscow`
+* **Inference Server deployment:** Create app from Dockerfile `inference-server/Dockerfile` :
+    * OCP example: `oc new-app --name inference-server https://itk-snap-dss:2EVH6Ky6zJPL7wn7QAsq@gitlab.com/PSLC/ia-medical/itk-snap-dss.git --context-dir inference-server`
 
 ## Running the service
 
