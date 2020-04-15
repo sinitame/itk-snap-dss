@@ -80,7 +80,7 @@ while True:
 
         for file in loaded_files:
             if file.endswith(".itksnap"):
-                workspace = Workspace(file)
+                workspace = Workspace(file, cancer_detection=True)
             else:
                 files_to_process.append(file)
 

@@ -2,10 +2,11 @@ import os
 from xml.dom import minidom
 
 class Workspace(object):
-    def __init__(self, workspace_file_path):
+    def __init__(self, workspace_file_path, cancer_detection=False):
         self.file_path = workspace_file_path
         self.file_name = os.path.basename(workspace_file_path)
         self.workspace = minidom.parse(workspace_file_path)
+        self.cancer_detection = cancer_detection
 
     def add_segmentation(self, ticket_path, file_name):
 
@@ -23,6 +24,12 @@ class Workspace(object):
                 folder.appendChild(IOHistory_node)
             elif folder.getAttribute("key") == "Layers":
                 folder.appendChild(segmentation_layer_node)
+
+            if self.cancer_detection:
+                if folder.getAttribute("key") == "Element[0]":
+                    self.modify_label(folder, [0, 76, 255], "79")
+                elif folder.getAttribute("key") == "Element[2]":
+                    self.modify_label(folder, [255, 0, 12], "255")
 
         # Generate result file path
         result_workspace_file = os.path.join(ticket_path, "results", self.file_name)
@@ -62,6 +69,14 @@ class Workspace(object):
         IOHistory_node.appendChild(label_image_folder)
 
         return IOHistory_node
+
+    def modify_label(self, label, color, opacity):
+        entries = label.getElementsByTagName("entry")
+        for entry in entries:
+            if entry.getAttribute("key") == "Alpha":
+                entry.setAttribute("value", opacity)
+            if entry.getAttribute("key") == "Color":
+                entry.setAttribute("value", '{} {} {}'.format(color[0], color[1], color[2]))
 
     def create_segmentation_layer_node(self, segmentation_file_path):
         segmentation_layer_node = self.workspace.createElement("folder")
